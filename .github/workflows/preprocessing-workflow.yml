@@ -1,0 +1,72 @@
+name: AI Dev Productivity Data Preprocessing
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths: 
+      - 'ai_dev_productivity.csv'
+      - 'automate_Fikri-Faiz-Zulfadhli.py'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # Manual trigger
+  schedule:
+    - cron: '0 2 * * 1'  # Weekly on Monday at 2 AM
+
+jobs:
+  preprocessing:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas numpy scikit-learn joblib
+        
+    - name: Check if input data exists
+      run: |
+        if [ ! -f "ai_dev_productivity.csv" ]; then
+          echo "Error: ai_dev_productivity.csv not found!"
+          exit 1
+        fi
+        
+    - name: Run preprocessing pipeline
+      run: |
+        python automate_Fikri-Faiz-Zulfadhli.py
+        
+    - name: Verify output files
+      run: |
+        if [ ! -f "ai_dev_productivity_processed.csv" ]; then
+          echo "Error: Processed data file not created!"
+          exit 1
+        fi
+        if [ ! -f "scaler_model.pkl" ]; then
+          echo "Error: Scaler model not created!"
+          exit 1
+        fi
+        echo "All output files created successfully!"
+        
+    - name: Upload processed dataset
+      uses: actions/upload-artifact@v3
+      with:
+        name: processed-dataset-${{ github.run_number }}
+        path: |
+          ai_dev_productivity_processed.csv
+          scaler_model.pkl
+        retention-days: 30
+        
+    - name: Commit processed files (if on main branch)
+      if: github.ref == 'refs/heads/main'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add ai_dev_productivity_processed.csv scaler_model.pkl
+        git diff --staged --quiet || git commit -m "Update processed dataset [automated]"
+        git push
