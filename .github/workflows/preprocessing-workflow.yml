@@ -5,7 +5,7 @@ on:
     branches: [ main, develop ]
     paths: 
       - 'ai_dev_productivity.csv'
-      - 'preprocessing/automate_Fikri Faiz Zulfadhli.py'
+      - 'preprocessing/automate_Fikri-Faiz-Zulfadhli.py'
   pull_request:
     branches: [ main ]
   workflow_dispatch:
@@ -40,7 +40,7 @@ jobs:
     - name: Run preprocessing pipeline
       run: |
         cd preprocessing
-        python automate_Fikri Faiz Zulfadhli.py
+        python automate_Fikri-Faiz-Zulfadhli.py
 
     - name: Verify output files
       run: |
