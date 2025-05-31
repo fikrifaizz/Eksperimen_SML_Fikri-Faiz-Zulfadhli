@@ -8,15 +8,15 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 import joblib
+import os
 
-
-def preprocess_ai_dev_productivity(input_file='ai_dev_productivity.csv'):
+def preprocess_ai_dev_productivity(input_file='../ai_dev_productivity.csv'):
     """
     Fungsi untuk melakukan preprocessing otomatis pada dataset AI Developer Productivity
     sesuai dengan eksperimen manual di notebook
 
     Args:
-        input_file (str): Path ke file dataset input
+        input_file (str): Path ke file dataset input (relative ke folder preprocessing)
 
     Returns:
         pd.DataFrame: Data yang sudah diproses dan siap untuk training
@@ -62,18 +62,17 @@ def preprocess_ai_dev_productivity(input_file='ai_dev_productivity.csv'):
 
     print("Standardisasi selesai")
 
-    # 4. Simpan hasil preprocessing
+    # 4. Simpan hasil preprocessing (di folder preprocessing)
     output_file = 'ai_dev_productivity_processed.csv'
     data_preprocessed.to_csv(output_file, index=False)
     print(f"Data yang sudah diproses telah disimpan sebagai '{output_file}'")
 
-    # 5. Simpan scaler model
+    # 5. Simpan scaler model (di folder preprocessing)
     scaler_file = 'scaler_model.pkl'
     joblib.dump(scaler, scaler_file)
     print(f"StandardScaler telah disimpan sebagai '{scaler_file}'")
 
     return data_preprocessed
-
 
 def main():
     """Fungsi utama untuk menjalankan preprocessing otomatis"""
@@ -81,9 +80,9 @@ def main():
         # Jalankan preprocessing
         processed_data = preprocess_ai_dev_productivity()
 
-        print("\n" + "=" * 50)
+        print("\n" + "="*50)
         print("PREPROCESSING SELESAI!")
-        print("=" * 50)
+        print("="*50)
         print(f"Shape data final: {processed_data.shape}")
         print("\nFile yang dihasilkan:")
         print("1. ai_dev_productivity_processed.csv")
@@ -92,7 +91,6 @@ def main():
     except Exception as e:
         print(f"Error during preprocessing: {str(e)}")
         raise
-
 
 if __name__ == "__main__":
     main()
